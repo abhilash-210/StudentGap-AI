@@ -41,7 +41,7 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
   ];
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 w-full">
       {/* Header Banner */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>

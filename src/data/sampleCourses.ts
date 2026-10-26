@@ -372,6 +372,32 @@ Safe sequence: <P1, P2, P0>. The system is SAFE.`,
           },
         ],
       },
+      {
+        id: 'unit-ml-3',
+        number: 3,
+        title: 'Deep Neural Architectures & Backpropagation',
+        description: 'Multi-layer perceptrons, computational graphs, vanishing/exploding gradients, and activation functions.',
+        topics: [
+          {
+            id: 'top-backprop',
+            unitId: 'unit-ml-3',
+            unitTitle: 'Deep Neural Architectures & Backpropagation',
+            title: 'Backpropagation & Vanishing Gradient Dynamics',
+            description: 'Jacobian chain rule, saturation of sigmoid/tanh activations, dying ReLU problem, and residual skip connections.',
+            examWeightagePercent: 25,
+            estimatedStudyMins: 95,
+            keyConcepts: ['Chain Rule on Computational Graphs', 'Sigmoid derivative saturation (max 0.25)', 'Dying ReLU condition & Leaky ReLU', 'Vanishing vs Exploding Gradients in Deep Networks'],
+            masteryLevel: 'WEAK',
+            masteryScore: 35,
+            questionsAttempted: 5,
+            questionsCorrect: 1,
+            detectedMisconceptions: [
+              'Believing the sigmoid function can be stacked in 10+ layers without severe gradient vanishing.',
+              'Assuming ReLU activations cannot suffer from dead neuron states where gradients become identically zero.',
+            ],
+          },
+        ],
+      },
     ],
     chunks: [
       {
@@ -390,6 +416,45 @@ Geometrically, the contours of the L1 penalty are polyhedra (diamonds in 2D) wit
 L2 Regularization (Ridge / Weight Decay): Adds penalty Ω(θ) = 1/2 λ ||w||_2^2 = 1/2 λ Σ w_i^2.
 The constraint region is a smooth hypersphere (circle in 2D). The intersection with loss contours shrinks weights towards zero proportionally, but rarely sets them identically to zero.
 Common student misconception: L2 causes sparse feature selection. That is false; only L1 produces exact zeroes.`,
+      },
+      {
+        id: 'chk-ml-2',
+        documentId: 'doc-ml-notes',
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 2: Optimization for Deep Models, Section 2.4 Adam',
+        page: 38,
+        wordCount: 175,
+        topics: ['top-loss-opt'],
+        content: `Adam (Adaptive Moment Estimation) combines ideas from Momentum and RMSProp:
+First moment: m_t = β_1 * m_{t-1} + (1 - β_1) * g_t
+Second moment: v_t = β_2 * v_{t-1} + (1 - β_2) * g_t^2
+
+Bias Correction:
+Since m_0 and v_0 are initialized as zero vectors, the estimators m_t and v_t are biased towards zero, especially during early time steps when β_1 and β_2 are close to 1 (typically 0.9 and 0.999).
+To counteract this bias:
+m_hat_t = m_t / (1 - β_1^t)
+v_hat_t = v_t / (1 - β_2^t)
+Parameter update: θ_t = θ_{t-1} - α * m_hat_t / (sqrt(v_hat_t) + ε).`,
+      },
+      {
+        id: 'chk-ml-3',
+        documentId: 'doc-ml-notes',
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 4: Gradient Flow & Activation Functions, Section 4.1',
+        page: 62,
+        wordCount: 185,
+        topics: ['top-backprop'],
+        content: `Vanishing Gradients in Deep Neural Networks:
+Consider a network with L layers using activation function σ(z):
+dL/dz_1 = (dL/dz_L) * Π_{k=1}^{L-1} (W_{k+1}^T * diag(σ'(z_k))).
+
+For the standard logistic sigmoid function σ(z) = 1 / (1 + e^{-z}):
+Its derivative is σ'(z) = σ(z)(1 - σ(z)).
+The maximum value of σ'(z) occurs at z = 0, where σ'(0) = 0.5 * 0.5 = 0.25.
+Because σ'(z) <= 0.25 everywhere, multiplying (<= 0.25) across many layers causes the gradient to vanish exponentially towards zero as it propagates back to the earlier layers: (0.25)^10 ≈ 9.5e-7.
+Remedies include ReLU activations (where derivative is 1 for z > 0), batch normalization, and residual skip connections.`,
       },
     ],
   },
@@ -691,6 +756,174 @@ export const GROUNDED_QUIZ_QUESTIONS: Record<string, QuizQuestion[]> = {
         section: 'Chapter 3: Regularization for Deep Models, Section 3.2',
         page: 54,
         sourceSnippet: 'The contours of the L1 penalty are polyhedra (diamonds in 2D) with sharp corners on the coordinate axes. The intersection frequently occurs at a corner where one or more weights are exactly zero. Hence, L1 induces sparsity.',
+      },
+    },
+    {
+      id: 'q-ml-2',
+      topicId: 'top-loss-opt',
+      topicTitle: 'Gradient Descent & Adaptive Optimizers (Adam, RMSProp)',
+      unitTitle: 'Supervised Learning & Optimization',
+      questionText: 'In the Adam optimizer, why are bias corrections (m_hat = m / (1 - β1^t) and v_hat = v / (1 - β2^t)) mathematically required?',
+      options: [
+        {
+          id: 'opt-ml-2a',
+          text: 'Because moment vectors m and v are initialized as zeros, making initial estimates heavily biased toward zero.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-ml-2b',
+          text: 'To prevent gradient explosion when the learning rate exceeds 1.0.',
+          isMisconception: true,
+          misconceptionExplanation: 'Gradient clipping prevents explosion, not exponential moving average bias correction.',
+        },
+        {
+          id: 'opt-ml-2c',
+          text: 'To ensure weight matrices remain orthogonal throughout training.',
+          isMisconception: true,
+          misconceptionExplanation: 'Adam does not enforce orthogonality constraints.',
+        },
+        {
+          id: 'opt-ml-2d',
+          text: 'To dynamically increase mini-batch batch sizes.',
+          isMisconception: true,
+          misconceptionExplanation: 'Mini-batch size is a data loader hyperparameter unaffected by moment estimates.',
+        },
+      ],
+      correctOptionId: 'opt-ml-2a',
+      explanation: 'Since m_0 and v_0 are initialized to zero vectors, their expectation E[m_t] = E[g_t](1 - β_1^t). Dividing by (1 - β_1^t) corrects the estimator so E[m_hat_t] = E[g_t].',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'CONCEPTUAL',
+      citation: {
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        section: 'Chapter 2: Optimization for Deep Models, Section 2.4 Adam',
+        page: 38,
+        sourceSnippet: 'Since m_0 and v_0 are initialized as zero vectors, the estimators m_t and v_t are biased towards zero, especially during early time steps. To counteract this: m_hat_t = m_t / (1 - β_1^t).',
+      },
+    },
+    {
+      id: 'q-ml-3',
+      topicId: 'top-regularization',
+      topicTitle: 'L1 (Lasso) vs L2 (Ridge) Regularization & Weight Decay',
+      unitTitle: 'Generalization, Regularization & Bias-Variance',
+      questionText: 'When using Inverted Dropout with keep-probability p = 0.8 during training, what must be done to neuron activations during inference?',
+      options: [
+        {
+          id: 'opt-ml-3a',
+          text: 'Drop 20% of the neurons randomly at test time.',
+          isMisconception: true,
+          misconceptionExplanation: 'Dropout is disabled during inference to ensure deterministic predictions.',
+        },
+        {
+          id: 'opt-ml-3b',
+          text: 'Leave activations unscaled and unchanged (identity pass).',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-ml-3c',
+          text: 'Multiply each activation by 0.8 during inference.',
+          isMisconception: true,
+          misconceptionExplanation: 'This is traditional dropout! Inverted dropout divides activations by p during training, so test time needs NO scaling.',
+        },
+        {
+          id: 'opt-ml-3d',
+          text: 'Divide all weights by the number of hidden layers.',
+          isMisconception: true,
+          misconceptionExplanation: 'Weight rescaling across layers is unrelated to inverted dropout mechanics.',
+        },
+      ],
+      correctOptionId: 'opt-ml-3b',
+      explanation: 'Inverted Dropout divides active neurons by p during training: h = (mask * h) / p. This preserves the expected activation sum, meaning NO scaling or modification is needed at test time.',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'PROBLEM_SOLVING',
+      citation: {
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        section: 'Chapter 3: Regularization for Deep Models, Section 3.2',
+        page: 54,
+        sourceSnippet: 'Common student misconception: Assuming dropout scaling is always needed at test time. With inverted dropout, scaling is performed at train time so inference remains a pure identity operation.',
+      },
+    },
+    {
+      id: 'q-ml-4',
+      topicId: 'top-backprop',
+      topicTitle: 'Backpropagation & Vanishing Gradient Dynamics',
+      unitTitle: 'Deep Neural Architectures & Backpropagation',
+      questionText: 'Why does stacking multiple standard sigmoid activations σ(z) lead to vanishing gradients in deep networks?',
+      options: [
+        {
+          id: 'opt-ml-4a',
+          text: 'The maximum derivative of the logistic sigmoid is 0.25, so repeated chain-rule multiplication causes gradients to decay exponentially toward zero.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-ml-4b',
+          text: 'Sigmoid produces negative outputs that cancel out backward gradient updates.',
+          isMisconception: true,
+          misconceptionExplanation: 'The sigmoid range is strictly (0, 1) and never negative.',
+        },
+        {
+          id: 'opt-ml-4c',
+          text: 'Sigmoid is non-differentiable at zero like ReLU.',
+          isMisconception: true,
+          misconceptionExplanation: 'Sigmoid is smooth and infinitely differentiable everywhere.',
+        },
+        {
+          id: 'opt-ml-4d',
+          text: 'Sigmoid produces unbounded exploding outputs.',
+          isMisconception: true,
+          misconceptionExplanation: 'Sigmoid is bounded between 0 and 1, preventing explosion in activations.',
+        },
+      ],
+      correctOptionId: 'opt-ml-4a',
+      explanation: 'σ’(z) = σ(z)(1 - σ(z)). At z=0, σ’(0) = 0.5 * 0.5 = 0.25. Across 10 layers, the backpropagated gradient is multiplied by numbers <= 0.25, shrinking by (0.25)^10 ≈ 10^-6.',
+      difficulty: 'HARD',
+      cognitiveLevel: 'CONCEPTUAL',
+      citation: {
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        section: 'Chapter 4: Gradient Flow & Activation Functions, Section 4.1',
+        page: 62,
+        sourceSnippet: 'The maximum value of σ\'(z) occurs at z = 0, where σ\'(0) = 0.25. Because σ\'(z) <= 0.25 everywhere, multiplying across many layers causes the gradient to vanish exponentially towards zero.',
+      },
+    },
+    {
+      id: 'q-ml-5',
+      topicId: 'top-backprop',
+      topicTitle: 'Backpropagation & Vanishing Gradient Dynamics',
+      unitTitle: 'Deep Neural Architectures & Backpropagation',
+      questionText: 'Can a network using ReLU activations still suffer from gradient stagnation during backpropagation?',
+      options: [
+        {
+          id: 'opt-ml-5a',
+          text: 'No, because ReLU derivatives are always strictly positive regardless of input.',
+          isMisconception: true,
+          misconceptionExplanation: 'For z < 0, the ReLU derivative is exactly 0, so the neuron cannot pass any gradient.',
+        },
+        {
+          id: 'opt-ml-5b',
+          text: 'Yes, if a neuron gets pushed into the z < 0 regime for all inputs, its gradient becomes identically zero ("Dying ReLU").',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-ml-5c',
+          text: 'No, because backpropagation automatically skips inactive layers.',
+          isMisconception: true,
+          misconceptionExplanation: 'Backpropagation computes the exact chain rule through all layers without skipping.',
+        },
+        {
+          id: 'opt-ml-5d',
+          text: 'Yes, but only if the loss function is binary cross-entropy.',
+          isMisconception: true,
+          misconceptionExplanation: 'Dying ReLU depends on the pre-activation input sign, not the choice of loss function.',
+        },
+      ],
+      correctOptionId: 'opt-ml-5b',
+      explanation: 'When a large gradient update causes a ReLU neuron to output negative values across the dataset, its derivative stays 0 forever, rendering the neuron permanently dead.',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'PROBLEM_SOLVING',
+      citation: {
+        documentName: 'Deep_Learning_Math_Lecture_Notes.pdf',
+        section: 'Chapter 4: Gradient Flow & Activation Functions, Section 4.1',
+        page: 62,
+        sourceSnippet: 'Common misconception: Assuming ReLU activations cannot suffer from dead neuron states. If z < 0, the gradient is 0.',
       },
     },
   ],

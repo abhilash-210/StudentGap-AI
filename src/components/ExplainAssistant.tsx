@@ -167,14 +167,14 @@ What topic or diagnostic gap would you like to deconstruct today?`,
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                Explain-This-Topic RAG Assistant
+                AI Syllabus Tutor
               </h1>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                100% Grounded
+                Grounded Citations
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Grounded exclusively in your uploaded syllabus, notes, and past exam papers.
+              Answers grounded directly in your syllabus, lecture notes, and past exam papers.
             </p>
           </div>
         </div>

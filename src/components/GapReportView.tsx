@@ -89,16 +89,19 @@ export const GapReportView: React.FC<GapReportViewProps> = ({
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 w-full">
       {/* Executive Diagnostic Summary Banner */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="flex items-center gap-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${statusMeta.badge}`}>
+              <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30">
+                Step 2 • Gap Diagnosis
+              </span>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusMeta.badge}`}>
                 {statusMeta.title}
               </span>
-              <span className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+              <span className="text-slate-500 dark:text-slate-400 text-xs font-medium hidden sm:inline">
                 • {report.totalQuestionsEvaluated} Questions Evaluated
               </span>
             </div>

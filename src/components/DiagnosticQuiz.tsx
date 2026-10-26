@@ -164,11 +164,11 @@ export const DiagnosticQuiz: React.FC<DiagnosticQuizProps> = ({
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-              Grounded Diagnostic Assessment
+            <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+              Step 1 • Diagnostic Assessment
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Grounded in Student Notes & Syllabus
+              Grounded in Course Notes & Syllabus
             </span>
           </div>
           <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">

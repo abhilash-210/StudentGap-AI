@@ -11,7 +11,12 @@ import {
   EvaluatedQuestionResult,
   StudentAnswer,
 } from '@/types';
-import { loadStoredData, saveStoredData } from '@/lib/storage';
+import {
+  loadStoredData,
+  saveStoredData,
+  getBaselineReportForCourse,
+  getBaselinePlanForCourse,
+} from '@/lib/storage';
 import { GROUNDED_QUIZ_QUESTIONS } from '@/data/sampleCourses';
 import { Navbar, NavTab } from '@/components/Navbar';
 import { StudentDashboard } from '@/components/StudentDashboard';
@@ -130,6 +135,22 @@ export default function HomePage() {
     setActiveCourseId(courseId);
     saveStoredData('ACTIVE_COURSE_ID', courseId);
     setFilterTopicForQuiz(undefined);
+
+    const targetCourse = courses.find((c) => c.id === courseId);
+    if (targetCourse) {
+      const topicIds = targetCourse.units.flatMap((u) => u.topics.map((t) => t.id));
+      const existingAttempt = attempts.find((a) => a.topicIds.some((id) => topicIds.includes(id)));
+      if (existingAttempt && existingAttempt.gapReport) {
+        setLatestReport(existingAttempt.gapReport);
+      } else {
+        const freshReport = getBaselineReportForCourse(targetCourse);
+        const freshPlan = getBaselinePlanForCourse(targetCourse, freshReport);
+        setLatestReport(freshReport);
+        setRevisionPlan(freshPlan);
+        saveStoredData('LATEST_GAP_REPORT', freshReport);
+        saveStoredData('REVISION_PLAN', freshPlan);
+      }
+    }
   };
 
   // Topic map triggers
@@ -372,15 +393,18 @@ export default function HomePage() {
       <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-6 mt-12 text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-800 dark:text-slate-200">GapFinder AI</span>
-            <span>• Placement Drive Technical Evaluation Deliverable</span>
+            <span className="font-bold text-slate-800 dark:text-slate-200">StudentGap AI</span>
+            <span>• Intelligent Knowledge Diagnosis & Personalized Revision Engine</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span>Retrieval-Augmented Generation (RAG)</span>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Grounded RAG Active
+            </span>
             <span>•</span>
-            <span>Misconception Diagnosis</span>
+            <span>Misconception Detection</span>
             <span>•</span>
-            <span>Adaptive Revision</span>
+            <span>Adaptive Planner</span>
           </div>
         </div>
       </footer>

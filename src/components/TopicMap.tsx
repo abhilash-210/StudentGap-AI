@@ -84,7 +84,7 @@ export const TopicMap: React.FC<TopicMapProps> = ({
   const strongCount = allTopics.filter((t) => t.masteryLevel === 'STRONG').length;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 w-full">
       {/* Header Banner */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">

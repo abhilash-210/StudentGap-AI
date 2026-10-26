@@ -108,14 +108,14 @@ export const RevisionPlanView: React.FC<RevisionPlanViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 w-full">
       {/* Plan Header & Timeframe Adjuster */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
-                Personalized Adaptive Plan
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                Step 3 • Adaptive Revision Plan
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 • {plan.timeframeDays}-Day Sprint
