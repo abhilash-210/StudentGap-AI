@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS public.material_chunks (
   chunk_index INTEGER NOT NULL,
   content TEXT NOT NULL,
   word_count INTEGER NOT NULL,
+  owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  is_private BOOLEAN NOT NULL DEFAULT false,
   -- 768-dimensional vector matching text-embedding-004 or 1536-dim for text-embedding-3-small
   embedding vector(768),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -103,12 +105,22 @@ CREATE TABLE IF NOT EXISTS public.revision_plans (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 8. Stored Procedure for Cosine Distance Vector Match (RAG retrieval)
+-- 8. Course Enrollments Table (Student-Course mapping)
+CREATE TABLE IF NOT EXISTS public.course_enrollments (
+  id TEXT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
+  enrolled_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, course_id)
+);
+
+-- 9. Stored Procedure for Cosine Distance Vector Match (RAG retrieval)
 CREATE OR REPLACE FUNCTION public.match_chunks (
   query_embedding vector(768),
   match_threshold float DEFAULT 0.65,
   match_count int DEFAULT 5,
-  p_course_id text DEFAULT NULL
+  p_course_id text DEFAULT NULL,
+  p_user_id uuid DEFAULT NULL
 )
 RETURNS TABLE (
   id text,
@@ -140,6 +152,7 @@ BEGIN
     1 - (mc.embedding <=> query_embedding) AS similarity
   FROM public.material_chunks mc
   WHERE (p_course_id IS NULL OR mc.course_id = p_course_id)
+    AND (mc.is_private = false OR mc.owner_id = p_user_id OR mc.owner_id IS NULL)
     AND (mc.embedding IS NOT NULL)
     AND (1 - (mc.embedding <=> query_embedding) > match_threshold)
   ORDER BY mc.embedding <=> query_embedding
@@ -147,17 +160,32 @@ BEGIN
 END;
 $$;
 
--- 9. Row Level Security (RLS) Configuration
+-- 10. Row Level Security (RLS) Configuration
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.course_enrollments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.material_chunks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quiz_attempts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gap_reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.revision_plans ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access to courses and chunks (or restrict to authenticated users)
+-- Allow public read access to courses (Idempotent policy creation)
+DROP POLICY IF EXISTS "Public courses are readable" ON public.courses;
 CREATE POLICY "Public courses are readable" ON public.courses FOR SELECT USING (true);
-CREATE POLICY "Public material chunks are readable" ON public.material_chunks FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users can manage own enrollments" ON public.course_enrollments;
+CREATE POLICY "Users can manage own enrollments" ON public.course_enrollments FOR ALL USING (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Public or owned chunks are readable" ON public.material_chunks;
+CREATE POLICY "Public or owned chunks are readable" ON public.material_chunks FOR SELECT USING (is_private = false OR auth.uid() = owner_id OR owner_id IS NULL);
+
+DROP POLICY IF EXISTS "Users can manage own attempts" ON public.quiz_attempts;
 CREATE POLICY "Users can manage own attempts" ON public.quiz_attempts FOR ALL USING (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Users can manage own gap reports" ON public.gap_reports;
 CREATE POLICY "Users can manage own gap reports" ON public.gap_reports FOR ALL USING (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Users can manage own revision plans" ON public.revision_plans;
 CREATE POLICY "Users can manage own revision plans" ON public.revision_plans FOR ALL USING (auth.uid() = user_id OR user_id IS NULL);
+
+

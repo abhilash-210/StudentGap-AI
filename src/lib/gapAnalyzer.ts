@@ -37,11 +37,17 @@ export function evaluateStudentQuizAnswers(
     let identifiedMisconception: string | undefined = undefined;
 
     if (isCorrect) {
-      diagnosticFeedback = `Correct! You demonstrated accurate understanding of "${question.topicTitle}". Citation: ${question.citation.documentName} (${question.citation.section}).`;
+      const citInfo = question.citation
+        ? ` Citation: ${question.citation.documentName} (${question.citation.section || 'Syllabus'}).`
+        : '';
+      diagnosticFeedback = `Correct! You demonstrated accurate understanding of "${question.topicTitle}".${citInfo}`;
     } else {
       if (chosenOption?.isMisconception) {
         identifiedMisconception = chosenOption.misconceptionExplanation;
-        diagnosticFeedback = `Identified Misconception: ${chosenOption.misconceptionExplanation || 'Conceptual confusion detected.'} Reference: ${question.citation.documentName} [Page ${question.citation.page || 'N/A'}].`;
+        const citInfo = question.citation
+          ? ` Reference: ${question.citation.documentName} [Page ${question.citation.page || 'N/A'}].`
+          : '';
+        diagnosticFeedback = `Identified Misconception: ${chosenOption.misconceptionExplanation || 'Conceptual confusion detected.'}${citInfo}`;
       } else if (!studentAns.selectedOptionId) {
         diagnosticFeedback = `Question was unattempted. This topic was not tested in this run.`;
       } else {

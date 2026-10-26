@@ -19,7 +19,13 @@ import {
   Moon,
   Menu,
   X,
+  LogOut,
 } from 'lucide-react';
+import {
+  DEMO_PROFESSOR,
+  DEMO_STUDENT_ALEX,
+  DEMO_STUDENT_PRIYA,
+} from '@/lib/storage';
 
 export type NavTab =
   | 'dashboard'
@@ -43,6 +49,8 @@ interface NavbarProps {
   onOpenAuth: () => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  onLogout?: () => void;
+  onSelectUser?: (user: UserProfile) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -58,6 +66,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuth,
   theme,
   onToggleTheme,
+  onLogout,
+  onSelectUser,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -175,27 +185,44 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {/* Role Switcher: Student vs Teacher */}
-            <div className="hidden sm:flex items-center bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800">
+            {/* Evaluator Fast Account Switcher */}
+            <div className="hidden lg:flex items-center bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200 dark:border-slate-800 text-[11px] font-semibold">
+              <span className="px-2 text-[10px] uppercase font-bold text-slate-400">Demo:</span>
               <button
-                onClick={() => setUser({ ...user, role: 'STUDENT' })}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition ${
-                  user.role === 'STUDENT'
-                    ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                type="button"
+                onClick={() => onSelectUser ? onSelectUser(DEMO_STUDENT_ALEX) : setUser(DEMO_STUDENT_ALEX)}
+                className={`px-2 py-0.5 rounded transition ${
+                  user.id === DEMO_STUDENT_ALEX.id
+                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
+                title="Switch to Alex Chen (Student: OS + DBMS)"
               >
-                Student
+                Alex
               </button>
               <button
-                onClick={() => setUser({ ...user, role: 'TEACHER' })}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition flex items-center gap-1 ${
-                  user.role === 'TEACHER'
-                    ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                type="button"
+                onClick={() => onSelectUser ? onSelectUser(DEMO_STUDENT_PRIYA) : setUser(DEMO_STUDENT_PRIYA)}
+                className={`px-2 py-0.5 rounded transition ${
+                  user.id === DEMO_STUDENT_PRIYA.id
+                    ? 'bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
+                title="Switch to Priya Sharma (Student: OS + ML)"
               >
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span>Teacher</span>
+                Priya
+              </button>
+              <button
+                type="button"
+                onClick={() => onSelectUser ? onSelectUser(DEMO_PROFESSOR) : setUser(DEMO_PROFESSOR)}
+                className={`px-2 py-0.5 rounded transition ${
+                  user.id === DEMO_PROFESSOR.id
+                    ? 'bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+                title="Switch to Dr. Sarah Williams (Professor: All 3 Courses)"
+              >
+                Dr. Sarah
               </button>
             </div>
 
@@ -228,9 +255,25 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenAuth}
               className="flex items-center gap-1.5 px-2.5 py-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 transition text-xs font-semibold"
             >
-              <User className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              {user.role === 'TEACHER' ? (
+                <GraduationCap className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              ) : (
+                <User className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              )}
               <span className="max-w-[85px] sm:max-w-none truncate">{user.name}</span>
             </button>
+
+            {/* Log Out */}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                title="Log out to landing page"
+                aria-label="Log out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
 
             {/* Mobile Menu Trigger */}
             <button

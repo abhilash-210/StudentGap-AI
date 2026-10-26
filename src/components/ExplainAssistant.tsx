@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { CourseMaterial, ChatMessage } from '@/types';
+import { RAGRetriever } from '@/lib/ragEngine';
 import {
   Sparkles,
   BookOpen,
@@ -105,19 +106,37 @@ What topic or diagnostic gap would you like to deconstruct today?`,
 
       setMessages((prev) => [...prev, botMsg]);
     } catch (err: unknown) {
-      console.error('Failed to get RAG answer:', err);
-      setErrorMessage('Unable to connect to the explanation engine. A local grounded fallback will be attempted.');
-      const errorMsg: ChatMessage = {
-        id: `msg-err-${Date.now()}`,
+      console.warn('API call failed or offline; generating grounded response from local indexed chunks:', err);
+      const retriever = new RAGRetriever(course.chunks);
+      const relevant = retriever.search(query, 3);
+      const topChunk = relevant[0]?.chunk;
+      const citations = relevant.map((r) => ({
+        documentName: r.chunk.documentName,
+        section: r.chunk.section,
+        page: r.chunk.page,
+        snippet: r.chunk.content.slice(0, 220) + '...',
+      }));
+
+      const fallbackContent = topChunk
+        ? `### Grounded Topic Analysis: ${course.code}\n\nAccording to your uploaded notes (**${topChunk.documentName}**, *${topChunk.section}*):\n\n> "${topChunk.content}"\n\n#### 💡 Core Conceptual Keypoints:\n- Grounded directly in your syllabus material for **${course.title}**.\n- Review this section carefully before attempting diagnostic practice questions.`
+        : `We searched your uploaded materials for "${query}". Please check that relevant lecture notes are uploaded for ${course.code}.`;
+
+      const botMsg: ChatMessage = {
+        id: `msg-bot-${Date.now()}`,
         sender: 'assistant',
         timestamp: new Date().toISOString(),
-        content: `Sorry, an error occurred while searching notes. Please check your query or verify network connectivity.`,
+        content: fallbackContent,
+        citations,
+        suggestedFollowups: [
+          `Test my understanding on this topic with a diagnostic quiz`,
+          `How does this concept impact my overall exam readiness?`,
+        ],
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => [...prev, botMsg]);
     } finally {
       setIsLoading(false);
     }
-  }, [inputQuery, isLoading, course.id, course.chunks]);
+  }, [inputQuery, isLoading, course.id, course.chunks, course.code, course.title]);
 
   // If prompted externally (e.g. from Gap Report click)
   useEffect(() => {

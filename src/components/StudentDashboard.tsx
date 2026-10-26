@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Target,
   Zap,
+  BookOpen,
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -27,6 +28,10 @@ interface StudentDashboardProps {
   plan: RevisionPlan;
   attempts: QuizAttemptRecord[];
   user: UserProfile;
+  allCourses?: CourseMaterial[];
+  enrolledCourseIds?: string[];
+  onSelectCourse?: (courseId: string) => void;
+  onEnrollCourse?: (courseId: string) => void;
   onNavigateTab: (
     tab: 'dashboard' | 'gap-report' | 'topic-map' | 'diagnostic-quiz' | 'revision-plan' | 'explain-assistant' | 'progress'
   ) => void;
@@ -40,6 +45,10 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   plan,
   attempts,
   user,
+  allCourses = [],
+  enrolledCourseIds = [],
+  onSelectCourse,
+  onEnrollCourse,
   onNavigateTab,
   onSelectTopicForQuiz,
   onSelectTopicForExplain,
@@ -145,6 +154,104 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Course Enrolled & Available to Enroll Cards */}
+      {allCourses.length > 0 && (
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span>My Courses &amp; Available Catalog</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Browse and switch across your enrolled curriculum courses, or enroll in additional benchmark courses.
+              </p>
+            </div>
+            <span className="text-xs font-semibold text-slate-500">
+              {enrolledCourseIds.length} of {allCourses.length} Courses Enrolled
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {allCourses.map((c) => {
+              const isEnrolled = enrolledCourseIds.includes(c.id);
+              const isActive = c.id === course.id;
+              const totalTopics = c.units.reduce((acc, u) => acc + u.topics.length, 0);
+
+              return (
+                <div
+                  key={c.id}
+                  className={`p-4 rounded-xl border flex flex-col justify-between transition ${
+                    isActive
+                      ? 'border-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/30 ring-1 ring-indigo-500'
+                      : isEnrolled
+                      ? 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40'
+                      : 'border-slate-200/70 dark:border-slate-800/60 bg-white dark:bg-slate-900 opacity-80'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">
+                        {c.code}
+                      </span>
+                      {isActive ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-600 text-white">
+                          Active Workspace
+                        </span>
+                      ) : isEnrolled ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                          Enrolled
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
+                          Not Enrolled
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                      {c.title}
+                    </h3>
+                    <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                      {c.description}
+                    </p>
+
+                    <div className="pt-2 text-[10px] text-slate-500 flex items-center justify-between">
+                      <span>Prof: {c.assignedProfessor || 'Dr. Sarah Williams'}</span>
+                      <span>{totalTopics} Topics</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                    {isActive ? (
+                      <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold text-center">
+                        ✓ Viewing Workspace
+                      </div>
+                    ) : isEnrolled ? (
+                      <button
+                        type="button"
+                        onClick={() => onSelectCourse && onSelectCourse(c.id)}
+                        className="w-full py-1.5 rounded-lg text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-slate-700 transition"
+                      >
+                        Switch to Course
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onEnrollCourse && onEnrollCourse(c.id)}
+                        className="w-full py-1.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-xs"
+                      >
+                        + Enroll in Course
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Evaluator Interactive Workflow Stepper */}
       <div className="rounded-2xl border border-indigo-100 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50/70 via-white to-purple-50/50 dark:from-slate-900 dark:via-slate-900/90 dark:to-indigo-950/40 p-5 sm:p-6 shadow-xs">

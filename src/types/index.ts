@@ -19,6 +19,8 @@ export interface MaterialChunk {
   content: string;
   topics: string[]; // Topic IDs this chunk is relevant to
   wordCount: number;
+  ownerId?: string;
+  isPrivate?: boolean;
 }
 
 export interface TopicItem {
@@ -56,6 +58,7 @@ export interface CourseMaterial {
   subject: string;
   targetExam: string;
   examDate?: string;
+  assignedProfessor?: string;
   units: UnitItem[];
   documents: {
     id: string;
@@ -64,6 +67,8 @@ export interface CourseMaterial {
     uploadedAt: string;
     sizeKb: number;
     chunkCount: number;
+    ownerId?: string;
+    isPrivate?: boolean;
   }[];
   chunks: MaterialChunk[];
 }
@@ -194,6 +199,8 @@ export interface RevisionPlan {
 
 export interface QuizAttemptRecord {
   id: string;
+  userId?: string;
+  courseId?: string;
   timestamp: string;
   topicIds: string[];
   totalQuestions: number;
@@ -224,4 +231,15 @@ export interface UserProfile {
   role: 'STUDENT' | 'TEACHER';
   avatar?: string;
   isDemoUser: boolean;
+  institution?: string;
+  enrolledCourseIds?: string[];
+}
+
+export interface StudentEnrollment {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  courseId: string;
+  enrolledAt: string;
 }

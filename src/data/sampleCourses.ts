@@ -8,6 +8,7 @@ export const SAMPLE_COURSES: CourseMaterial[] = [
     subject: 'Computer Science & Engineering',
     targetExam: 'End-Semester University Exam & GATE CS',
     examDate: '2026-11-15',
+    assignedProfessor: 'Dr. Sarah Williams',
     description: 'Core systems course covering process concurrency, synchronization primitives, memory virtualization, page replacement, and disk scheduling.',
     documents: [
       {
@@ -297,12 +298,325 @@ Safe sequence: <P1, P2, P0>. The system is SAFE.`,
     ],
   },
   {
+    id: 'cs202-dbms',
+    code: 'CS202',
+    title: 'Database Management Systems',
+    subject: 'Computer Science & Information Technology',
+    targetExam: 'End-Semester University Exam & Technical Certifications',
+    examDate: '2026-11-25',
+    assignedProfessor: 'Dr. Sarah Williams',
+    description: 'Foundational principles of relational database architecture, relational algebra, SQL querying, functional dependencies, normal forms (1NF through BCNF), transaction processing, ACID properties, serializability, two-phase locking (2PL), and crash recovery.',
+    documents: [
+      {
+        id: 'doc-dbms-syl',
+        name: 'CS202_Database_Systems_Official_Syllabus.pdf',
+        type: 'syllabus',
+        uploadedAt: '2026-10-12',
+        sizeKb: 135,
+        chunkCount: 7,
+      },
+      {
+        id: 'doc-dbms-notes',
+        name: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        type: 'notes',
+        uploadedAt: '2026-10-14',
+        sizeKb: 810,
+        chunkCount: 22,
+      },
+      {
+        id: 'doc-dbms-past',
+        name: 'DBMS_University_Past_Exam_Questions_2022_2024.pdf',
+        type: 'past_paper',
+        uploadedAt: '2026-10-16',
+        sizeKb: 430,
+        chunkCount: 11,
+      },
+    ],
+    units: [
+      {
+        id: 'unit-db-1',
+        number: 1,
+        title: 'Database Fundamentals & Conceptual Design',
+        description: 'Data models, three-schema architecture, Entity-Relationship (ER) modeling, and relational mapping.',
+        topics: [
+          {
+            id: 'top-db-fund',
+            unitId: 'unit-db-1',
+            unitTitle: 'Database Fundamentals & Conceptual Design',
+            title: 'Database Fundamentals & Architecture',
+            description: 'Three-schema ANSI/SPARC architecture, physical and logical data independence, DDL vs DML vs DCL.',
+            examWeightagePercent: 8,
+            estimatedStudyMins: 45,
+            keyConcepts: ['Three-Schema Architecture', 'Logical Data Independence', 'Physical Data Independence', 'DBMS vs File System'],
+            masteryLevel: 'STRONG',
+            masteryScore: 85,
+            questionsAttempted: 4,
+            questionsCorrect: 4,
+            detectedMisconceptions: [],
+          },
+          {
+            id: 'top-er-models',
+            unitId: 'unit-db-1',
+            unitTitle: 'Database Fundamentals & Conceptual Design',
+            title: 'ER Models & Extended ER Features',
+            description: 'Entities, weak entity sets, cardinalities, participation constraints, specialization, and generalization.',
+            examWeightagePercent: 12,
+            estimatedStudyMins: 60,
+            keyConcepts: ['Weak Entity Sets & Identifying Relationships', 'Cardinality Ratios (1:1, 1:N, M:N)', 'Total vs Partial Participation', 'ER to Relational Table Conversion Rules'],
+            masteryLevel: 'MEDIUM',
+            masteryScore: 68,
+            questionsAttempted: 4,
+            questionsCorrect: 3,
+            detectedMisconceptions: ['Assuming weak entity sets have their own primary key without the identifying owner.'],
+          },
+          {
+            id: 'top-rel-model',
+            unitId: 'unit-db-1',
+            unitTitle: 'Database Fundamentals & Conceptual Design',
+            title: 'Relational Model & Integrity Constraints',
+            description: 'Tuples, domains, super keys, candidate keys, primary keys, foreign keys, and referential integrity actions.',
+            examWeightagePercent: 15,
+            estimatedStudyMins: 75,
+            keyConcepts: ['Candidate Key Minimality', 'Referential Integrity Constraints', 'ON DELETE CASCADE vs SET NULL', 'Domain and Entity Integrity'],
+            masteryLevel: 'STRONG',
+            masteryScore: 80,
+            questionsAttempted: 5,
+            questionsCorrect: 4,
+            detectedMisconceptions: [],
+          },
+        ],
+      },
+      {
+        id: 'unit-db-2',
+        number: 2,
+        title: 'Relational Query Languages & Relational Design',
+        description: 'SQL queries, aggregations, functional dependencies, closure sets, and normal forms (1NF through BCNF).',
+        topics: [
+          {
+            id: 'top-sql-queries',
+            unitId: 'unit-db-2',
+            unitTitle: 'Relational Query Languages & Relational Design',
+            title: 'SQL DDL, DML & Advanced Aggregations',
+            description: 'Joins (INNER, LEFT, RIGHT, FULL OUTER), subqueries, GROUP BY, HAVING, and Three-Valued Logic (3VL) with NULL.',
+            examWeightagePercent: 15,
+            estimatedStudyMins: 80,
+            keyConcepts: ['GROUP BY with HAVING vs WHERE', 'Correlated Subqueries', 'NULL comparison semantics (IS NULL vs = NULL)', 'SQL OUTER JOIN nuances'],
+            masteryLevel: 'MEDIUM',
+            masteryScore: 70,
+            questionsAttempted: 5,
+            questionsCorrect: 3,
+            detectedMisconceptions: ['Using WHERE to filter aggregated columns instead of HAVING.'],
+          },
+          {
+            id: 'top-func-dep',
+            unitId: 'unit-db-2',
+            unitTitle: 'Relational Query Languages & Relational Design',
+            title: 'Functional Dependencies & Attribute Closure',
+            description: 'Armstrong axioms, attribute set closure X+, canonical covers, and finding minimal candidate keys algorithmically.',
+            examWeightagePercent: 15,
+            estimatedStudyMins: 90,
+            keyConcepts: ['Armstrong Axioms (Reflexivity, Augmentation, Transitivity)', 'Attribute Closure Computation', 'Candidate Key Derivation', 'Extraneous Attribute Elimination'],
+            masteryLevel: 'WEAK',
+            masteryScore: 40,
+            questionsAttempted: 5,
+            questionsCorrect: 2,
+            detectedMisconceptions: ['Believing an attribute on the right side of a dependency can never be part of a candidate key.'],
+          },
+          {
+            id: 'top-normalization',
+            unitId: 'unit-db-2',
+            unitTitle: 'Relational Query Languages & Relational Design',
+            title: 'Normalization (1NF, 2NF, 3NF & BCNF)',
+            description: 'Lossless join decompositions, dependency preservation, BCNF definition vs 3NF trade-offs, and multi-valued dependencies.',
+            examWeightagePercent: 20,
+            estimatedStudyMins: 110,
+            keyConcepts: ['1NF Atomic Attributes', '2NF No Partial Dependencies', '3NF Transitive Dependency Removal', 'BCNF Superkey Determinant Rule', 'Lossless Join vs Dependency Preservation Trade-off'],
+            masteryLevel: 'WEAK',
+            masteryScore: 35,
+            questionsAttempted: 6,
+            questionsCorrect: 2,
+            detectedMisconceptions: [
+              'Assuming BCNF decomposition always preserves functional dependencies; BCNF guarantees lossless join, but cannot always preserve dependencies.',
+              'Confusing prime attributes with super keys in 3NF condition checks.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'unit-db-3',
+        number: 3,
+        title: 'Transaction Processing, Concurrency & Recovery',
+        description: 'ACID guarantees, conflict serializability, locking protocols (2PL), deadlock handling, and log-based recovery.',
+        topics: [
+          {
+            id: 'top-transactions',
+            unitId: 'unit-db-3',
+            unitTitle: 'Transaction Processing, Concurrency & Recovery',
+            title: 'Transactions & ACID Properties',
+            description: 'Atomicity, Consistency, Isolation, Durability, schedule view equivalence, and SQL isolation levels.',
+            examWeightagePercent: 10,
+            estimatedStudyMins: 60,
+            keyConcepts: ['ACID Definitions', 'Dirty Read (Read Uncommitted)', 'Non-repeatable Read (Read Committed)', 'Phantom Read (Repeatable Read vs Serializable)'],
+            masteryLevel: 'STRONG',
+            masteryScore: 85,
+            questionsAttempted: 4,
+            questionsCorrect: 4,
+            detectedMisconceptions: [],
+          },
+          {
+            id: 'top-concurrency',
+            unitId: 'unit-db-3',
+            unitTitle: 'Transaction Processing, Concurrency & Recovery',
+            title: 'Concurrency Control & Two-Phase Locking (2PL)',
+            description: 'Conflict serializability, precedence graphs, Basic 2PL, Strict 2PL, Rigorous 2PL, and cascading rollbacks.',
+            examWeightagePercent: 18,
+            estimatedStudyMins: 95,
+            keyConcepts: ['Precedence Graph Cycle Test', 'Two-Phase Locking (Growing & Shrinking phases)', 'Strict 2PL (Prevents Cascading Aborts)', 'Rigorous 2PL', '2PL Deadlock Potential'],
+            masteryLevel: 'WEAK',
+            masteryScore: 45,
+            questionsAttempted: 5,
+            questionsCorrect: 2,
+            detectedMisconceptions: [
+              'Assuming Basic 2PL prevents deadlocks; 2PL ensures conflict serializability, but can still lead to deadlocks.',
+              'Believing Strict 2PL is free from deadlocks.',
+            ],
+          },
+          {
+            id: 'top-db-recovery',
+            unitId: 'unit-db-3',
+            unitTitle: 'Transaction Processing, Concurrency & Recovery',
+            title: 'Database Recovery & Write-Ahead Logging (WAL)',
+            description: 'Write-Ahead Logging (WAL) protocol, deferred vs immediate database modification, checkpoints, and ARIES recovery algorithm.',
+            examWeightagePercent: 12,
+            estimatedStudyMins: 70,
+            keyConcepts: ['Write-Ahead Logging (WAL) Invariant', 'Checkpoints & Active Transaction Lists', 'Redo vs Undo Phase in Crash Recovery', 'ARIES Algorithm Analysis'],
+            masteryLevel: 'MEDIUM',
+            masteryScore: 65,
+            questionsAttempted: 4,
+            questionsCorrect: 3,
+            detectedMisconceptions: ['Assuming checkpoints immediately commit uncommitted dirty buffer pages to disk without undo logging.'],
+          },
+        ],
+      },
+    ],
+    chunks: [
+      {
+        id: 'chk-db-1',
+        documentId: 'doc-dbms-notes',
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 2: Relational Model & Keys, Section 2.3',
+        page: 28,
+        wordCount: 185,
+        topics: ['top-rel-model', 'top-func-dep'],
+        content: `Candidate Keys and Superkeys in the Relational Model:
+A superkey is any set of attributes within a schema that uniquely identifies each tuple in the relation.
+A candidate key is a minimal superkey: a superkey from which no attribute can be removed without losing the uniqueness property.
+Every relation must have at least one candidate key. One candidate key is chosen arbitrarily as the primary key.
+
+Referential Integrity:
+A foreign key FK in relation R1 referencing primary key PK in relation R2 requires that for every tuple t1 in R1, either t1[FK] is null, or t1[FK] matches the primary key value t2[PK] for some tuple t2 in R2.
+Violations of referential integrity on deletion of t2 can be resolved via:
+1. RESTRICT/NO ACTION: Reject deletion.
+2. CASCADE: Automatically delete matching tuples in R1.
+3. SET NULL: Set foreign key attributes in R1 to NULL.`,
+      },
+      {
+        id: 'chk-db-2',
+        documentId: 'doc-dbms-notes',
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 4: Relational Database Design & Normalization, Section 4.5 BCNF vs 3NF',
+        page: 65,
+        wordCount: 220,
+        topics: ['top-normalization', 'top-func-dep'],
+        content: `Normalization and Normal Forms (3NF vs BCNF):
+A relation schema R is in Third Normal Form (3NF) with respect to a set of functional dependencies F if, for every functional dependency X -> A in F+, at least one of the following holds:
+1. X -> A is trivial (i.e., A ⊆ X).
+2. X is a superkey of R.
+3. A is a prime attribute (i.e., A is a member of some candidate key of R).
+
+Boyce-Codd Normal Form (BCNF):
+A relation schema R is in BCNF if for every non-trivial functional dependency X -> A in F+, X is a superkey of R.
+Notice condition (3) from 3NF is absent in BCNF!
+
+CRITICAL THEOREM & TRADE-OFF:
+- Any relation schema can ALWAYS be decomposed into 3NF such that the decomposition is BOTH lossless-join and dependency-preserving.
+- Any relation schema can ALWAYS be decomposed into BCNF such that the decomposition is lossless-join, BUT dependency preservation CANNOT ALWAYS BE GUARANTEED.
+Common student error: Assuming BCNF decomposition always preserves all functional dependencies. This is mathematically false.`,
+      },
+      {
+        id: 'chk-db-3',
+        documentId: 'doc-dbms-notes',
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 6: Transactions & ACID Guarantees, Section 6.2',
+        page: 92,
+        wordCount: 195,
+        topics: ['top-transactions'],
+        content: `ACID Properties of Transactions:
+1. Atomicity: Either all operations of the transaction are executed to completion, or none are (all-or-nothing). Managed by recovery subsystem.
+2. Consistency: Execution of a transaction in isolation preserves database integrity constraints. Responsibility of application programmer and integrity enforcer.
+3. Isolation: An executing transaction cannot reveal its uncommitted intermediate updates to other concurrent transactions. Managed by concurrency control subsystem.
+4. Durability: Once a transaction commits, its modifications persist permanently in non-volatile storage, even in the event of an immediate system crash. Managed by recovery subsystem.
+
+SQL Standard Isolation Levels and Phenomena:
+- READ UNCOMMITTED: Allows Dirty Reads, Non-repeatable Reads, Phantom Reads.
+- READ COMMITTED: Prevents Dirty Reads; permits Non-repeatable Reads and Phantoms.
+- REPEATABLE READ: Prevents Dirty Reads and Non-repeatable Reads; permits Phantoms.
+- SERIALIZABLE: Prevents all anomalies; equivalent to a serial execution schedule.`,
+      },
+      {
+        id: 'chk-db-4',
+        documentId: 'doc-dbms-notes',
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 7: Concurrency Control & Two-Phase Locking, Section 7.3',
+        page: 110,
+        wordCount: 205,
+        topics: ['top-concurrency'],
+        content: `Concurrency Control: Conflict Serializability & Two-Phase Locking (2PL):
+A schedule S is conflict serializable if it is conflict equivalent to some serial schedule S'.
+Conflict operations: Two operations on the same data item by different transactions, where at least one operation is a WRITE.
+Precedence Graph Test: A schedule is conflict serializable if and only if its precedence graph contains NO directed cycles.
+
+Two-Phase Locking (2PL):
+Rule: A transaction must acquire locks in a growing phase (cannot release any lock until all required locks are acquired), and once it releases a single lock, it enters the shrinking phase (cannot acquire any subsequent locks).
+Theorem: Any schedule generated by 2PL is guaranteed to be conflict serializable.
+
+CRITICAL MISCONCEPTION:
+Does 2PL prevent deadlocks? NO! Basic 2PL is susceptible to deadlocks (e.g. T1 holds lock on A and waits for B, while T2 holds lock on B and waits for A).
+Strict 2PL: All exclusive (write) locks are held until transaction commit/abort. Strict 2PL avoids cascading aborts, but STILL DOES NOT PREVENT DEADLOCKS.
+Rigorous 2PL: Both shared and exclusive locks are held until end of transaction.`,
+      },
+      {
+        id: 'chk-db-5',
+        documentId: 'doc-dbms-notes',
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        documentType: 'notes',
+        section: 'Chapter 8: Database Recovery & Log-Based Techniques, Section 8.2',
+        page: 128,
+        wordCount: 180,
+        topics: ['top-db-recovery'],
+        content: `Write-Ahead Logging (WAL) and Recovery:
+The fundamental WAL invariant states:
+1. Before any data item in database cache is updated on disk (flushed), the corresponding log record with the UNDO information must be written to stable non-volatile storage.
+2. Before a transaction enters the COMMITTED state, all log records for that transaction (including REDO information) must be flushed to stable log storage.
+
+Checkpoints:
+Periodically, the DBMS writes a CHECKPOINT log record to stable storage. This record includes the list of all transactions active at checkpoint time.
+Benefit: During crash recovery, the recovery manager does not need to scan the log from the very beginning of history, significantly truncating recovery duration. Transactions that completed before the checkpoint do not need to be redone if their dirty pages were flushed.`,
+      },
+    ],
+  },
+  {
     id: 'cs301-ml',
     code: 'CS301',
     title: 'Machine Learning & Deep Learning Foundations',
     subject: 'Artificial Intelligence & Data Science',
     targetExam: 'Midterm Assessment & Technical Interviews',
     examDate: '2026-11-20',
+    assignedProfessor: 'Dr. Sarah Williams',
     description: 'Comprehensive curriculum on empirical risk minimization, gradient-based optimization, regularization, backpropagation, and diagnostic evaluation.',
     documents: [
       {
@@ -461,6 +775,260 @@ Remedies include ReLU activations (where derivative is 1 for z > 0), batch norma
 ];
 
 export const GROUNDED_QUIZ_QUESTIONS: Record<string, QuizQuestion[]> = {
+  'cs202-dbms': [
+    {
+      id: 'q-db-1',
+      topicId: 'top-normalization',
+      topicTitle: 'Normalization (1NF, 2NF, 3NF & BCNF)',
+      unitTitle: 'Relational Query Languages & Relational Design',
+      questionText: 'When decomposing a relational schema R into Boyce-Codd Normal Form (BCNF), which of the following statements regarding functional dependencies is mathematically TRUE?',
+      options: [
+        {
+          id: 'opt-db-1a',
+          text: 'BCNF decomposition is guaranteed to preserve both lossless joins and all original functional dependencies.',
+          isMisconception: true,
+          misconceptionExplanation: 'This is a classic misconception! While BCNF always guarantees a lossless join, it cannot always preserve all functional dependencies.',
+        },
+        {
+          id: 'opt-db-1b',
+          text: 'BCNF decomposition guarantees a lossless join, but dependency preservation is NOT always achievable.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-1c',
+          text: '3NF guarantees BCNF properties as long as the relation contains no multi-valued dependencies.',
+          isMisconception: true,
+          misconceptionExplanation: '3NF allows prime attributes on the right-hand side of non-superkey determinants, which BCNF forbids.',
+        },
+        {
+          id: 'opt-db-1d',
+          text: 'BCNF decomposition is only possible if the relation has a single composite candidate key.',
+          isMisconception: true,
+          misconceptionExplanation: 'BCNF decomposition algorithm applies universally regardless of the number of candidate keys.',
+        },
+      ],
+      correctOptionId: 'opt-db-1b',
+      explanation: 'Every relational schema can be decomposed into 3NF with both lossless join and dependency preservation. However, decomposing into BCNF guarantees lossless join, but dependency preservation cannot always be satisfied (e.g. schema R(A,B,C) with FDs AB->C, C->B).',
+      difficulty: 'HARD',
+      cognitiveLevel: 'CONCEPTUAL',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 4: Relational Database Design & Normalization, Section 4.5',
+        page: 65,
+        sourceSnippet: 'Any relation schema can ALWAYS be decomposed into BCNF such that the decomposition is lossless-join, BUT dependency preservation CANNOT ALWAYS BE GUARANTEED.',
+      },
+    },
+    {
+      id: 'q-db-2',
+      topicId: 'top-concurrency',
+      topicTitle: 'Concurrency Control & Two-Phase Locking (2PL)',
+      unitTitle: 'Transaction Processing, Concurrency & Recovery',
+      questionText: 'A database system uses the Basic Two-Phase Locking (2PL) protocol for concurrency control. Which of the following guarantees does Basic 2PL provide?',
+      options: [
+        {
+          id: 'opt-db-2a',
+          text: 'It guarantees conflict serializability and completely prevents deadlocks.',
+          isMisconception: true,
+          misconceptionExplanation: '2PL does NOT prevent deadlocks! Two transactions in the growing phase can easily deadlock waiting for each other’s locks.',
+        },
+        {
+          id: 'opt-db-2b',
+          text: 'It guarantees conflict serializability, but transactions may still experience deadlocks and cascading aborts.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-2c',
+          text: 'It guarantees view serializability only if timestamp ordering is also enforced.',
+          isMisconception: true,
+          misconceptionExplanation: '2PL mathematically guarantees conflict serializability on its own; timestamp ordering is a separate protocol.',
+        },
+        {
+          id: 'opt-db-2d',
+          text: 'It prevents all phantom reads without requiring range or table locks.',
+          isMisconception: true,
+          misconceptionExplanation: 'Standard tuple-level 2PL does not prevent phantom inserts without index-range or predicate locking.',
+        },
+      ],
+      correctOptionId: 'opt-db-2b',
+      explanation: 'Basic 2PL ensures conflict serializability by requiring transactions to acquire all locks before releasing any. However, it does NOT prevent deadlocks (transactions can enter circular wait) and does NOT prevent cascading rollbacks (which requires Strict 2PL).',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'PROBLEM_SOLVING',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 7: Concurrency Control & Two-Phase Locking, Section 7.3',
+        page: 110,
+        sourceSnippet: 'CRITICAL MISCONCEPTION: Does 2PL prevent deadlocks? NO! Basic 2PL is susceptible to deadlocks. Strict 2PL avoids cascading aborts, but STILL DOES NOT PREVENT DEADLOCKS.',
+      },
+    },
+    {
+      id: 'q-db-3',
+      topicId: 'top-transactions',
+      topicTitle: 'Transactions & ACID Properties',
+      unitTitle: 'Transaction Processing, Concurrency & Recovery',
+      questionText: 'Transaction T1 reads data item X. Before T1 commits or finishes, concurrent transaction T2 modifies X and commits. If T1 re-reads X and observes the modified value, which isolation anomaly has occurred?',
+      options: [
+        {
+          id: 'opt-db-3a',
+          text: 'Dirty Read (Reading uncommitted data)',
+          isMisconception: true,
+          misconceptionExplanation: 'T2 committed before T1’s second read, so the data is committed. Dirty read occurs when reading UNCOMMITTED data.',
+        },
+        {
+          id: 'opt-db-3b',
+          text: 'Non-Repeatable Read (Fuzzy Read)',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-3c',
+          text: 'Phantom Read',
+          isMisconception: true,
+          misconceptionExplanation: 'Phantom read refers to a query retrieving a different set of rows matching a predicate due to inserts/deletions, not a changed value in an existing row.',
+        },
+        {
+          id: 'opt-db-3d',
+          text: 'Lost Update',
+          isMisconception: true,
+          misconceptionExplanation: 'Lost update happens when two transactions write over the same data without seeing the other’s write.',
+        },
+      ],
+      correctOptionId: 'opt-db-3b',
+      explanation: 'A Non-Repeatable Read occurs when a transaction reads the same row twice and obtains different data values because another transaction modified that row and committed in between the reads.',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'CONCEPTUAL',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 6: Transactions & ACID Guarantees, Section 6.2',
+        page: 92,
+        sourceSnippet: 'READ COMMITTED: Prevents Dirty Reads; permits Non-repeatable Reads and Phantoms. REPEATABLE READ: Prevents Dirty Reads and Non-repeatable Reads.',
+      },
+    },
+    {
+      id: 'q-db-4',
+      topicId: 'top-func-dep',
+      topicTitle: 'Functional Dependencies & Attribute Closure',
+      unitTitle: 'Relational Query Languages & Relational Design',
+      questionText: 'Given relation schema R(A, B, C, D) and functional dependencies F = {A -> B, B -> C, C -> D}. What is the attribute closure of A (A+) and what are the candidate keys of R?',
+      options: [
+        {
+          id: 'opt-db-4a',
+          text: 'A+ = {A, B}; Candidate keys are {A, B, C, D}.',
+          isMisconception: true,
+          misconceptionExplanation: 'By transitivity, A determines B, C, and D, so A+ is {A, B, C, D}.',
+        },
+        {
+          id: 'opt-db-4b',
+          text: 'A+ = {A, B, C, D}; The sole candidate key is {A}.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-4c',
+          text: 'A+ = {A, B, C, D}; Candidate keys are {A} and {D}.',
+          isMisconception: true,
+          misconceptionExplanation: 'D cannot determine any other attributes; D+ = {D}, so D cannot be a candidate key.',
+        },
+        {
+          id: 'opt-db-4d',
+          text: 'A+ = {A, D}; Candidate key is {B, C}.',
+          isMisconception: true,
+          misconceptionExplanation: 'A closure computation follows Armstrong axioms: A->B, B->C, C->D yields all four attributes.',
+        },
+      ],
+      correctOptionId: 'opt-db-4b',
+      explanation: 'Starting with A: A+ = {A}. Using A->B, A+ becomes {A, B}. Using B->C, A+ becomes {A, B, C}. Using C->D, A+ becomes {A, B, C, D}. Since A+ contains all attributes of R, A is a superkey. Since no proper subset of {A} is a superkey, {A} is the minimal candidate key.',
+      difficulty: 'EASY',
+      cognitiveLevel: 'PROBLEM_SOLVING',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 2: Relational Model & Keys, Section 2.3',
+        page: 28,
+        sourceSnippet: 'A candidate key is a minimal superkey: a superkey from which no attribute can be removed without losing the uniqueness property.',
+      },
+    },
+    {
+      id: 'q-db-5',
+      topicId: 'top-db-recovery',
+      topicTitle: 'Database Recovery & Write-Ahead Logging (WAL)',
+      unitTitle: 'Transaction Processing, Concurrency & Recovery',
+      questionText: 'What is the governing rule of the Write-Ahead Logging (WAL) protocol regarding dirty pages and transaction commit?',
+      options: [
+        {
+          id: 'opt-db-5a',
+          text: 'All modified data pages must be written to disk before any log records are flushed.',
+          isMisconception: true,
+          misconceptionExplanation: 'This is the exact opposite of WAL! Log records MUST precede disk writes of data pages.',
+        },
+        {
+          id: 'opt-db-5b',
+          text: 'The log record containing the undo/redo information must be flushed to stable storage BEFORE the corresponding dirty data page is written to disk.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-5c',
+          text: 'Transactions can only commit after a full system checkpoint has concluded.',
+          isMisconception: true,
+          misconceptionExplanation: 'Checkpoints run asynchronously in the background and do not block every individual transaction commit.',
+        },
+        {
+          id: 'opt-db-5d',
+          text: 'WAL requires in-memory buffer pools to be strictly non-volatile flash RAM.',
+          isMisconception: true,
+          misconceptionExplanation: 'WAL was explicitly designed to guarantee durability even when buffer pools reside in volatile RAM.',
+        },
+      ],
+      correctOptionId: 'opt-db-5b',
+      explanation: 'The Write-Ahead Logging invariant requires: (1) Undo log records must be on stable storage before the dirty data page reaches disk; (2) Redo log records must be on stable storage before the transaction commit record is written.',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'CONCEPTUAL',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 8: Database Recovery & Log-Based Techniques, Section 8.2',
+        page: 128,
+        sourceSnippet: 'The fundamental WAL invariant states: Before any data item in database cache is updated on disk, the corresponding log record with the UNDO information must be written to stable non-volatile storage.',
+      },
+    },
+    {
+      id: 'q-db-6',
+      topicId: 'top-sql-queries',
+      topicTitle: 'SQL DDL, DML & Advanced Aggregations',
+      unitTitle: 'Relational Query Languages & Relational Design',
+      questionText: 'In standard SQL with Three-Valued Logic (3VL), what is the evaluated result of the condition: WHERE (salary > 50000) OR (bonus IS NULL) for an employee whose salary is 40000 and bonus is NULL?',
+      options: [
+        {
+          id: 'opt-db-6a',
+          text: 'FALSE, because salary <= 50000 evaluates to FALSE.',
+          isMisconception: true,
+          misconceptionExplanation: 'In an OR expression, if one operand evaluates to TRUE, the entire expression evaluates to TRUE.',
+        },
+        {
+          id: 'opt-db-6b',
+          text: 'UNKNOWN, because any comparison involving NULL results in UNKNOWN.',
+          isMisconception: true,
+          misconceptionExplanation: '"IS NULL" is a Boolean operator that evaluates directly to TRUE or FALSE, never UNKNOWN.',
+        },
+        {
+          id: 'opt-db-6c',
+          text: 'TRUE, because bonus IS NULL evaluates to TRUE and FALSE OR TRUE evaluates to TRUE.',
+          isMisconception: false,
+        },
+        {
+          id: 'opt-db-6d',
+          text: 'NULL, because SQL returns NULL on comparisons with missing values.',
+          isMisconception: true,
+          misconceptionExplanation: '"IS NULL" returns a Boolean truth value, not a NULL.',
+        },
+      ],
+      correctOptionId: 'opt-db-6c',
+      explanation: 'salary > 50000 is FALSE (40000 > 50000). bonus IS NULL is TRUE (bonus is indeed NULL). In SQL 3VL, FALSE OR TRUE evaluates to TRUE. The row is selected.',
+      difficulty: 'MEDIUM',
+      cognitiveLevel: 'PROBLEM_SOLVING',
+      citation: {
+        documentName: 'Relational_Database_Design_And_Transactions_Notes.pdf',
+        section: 'Chapter 2: Relational Model & Keys, Section 2.3',
+        page: 28,
+        sourceSnippet: 'In SQL 3VL, IS NULL is a definitive boolean test (returns TRUE or FALSE, never UNKNOWN). FALSE OR TRUE evaluates to TRUE.',
+      },
+    },
+  ],
   'cs201-os': [
     {
       id: 'q-os-1',

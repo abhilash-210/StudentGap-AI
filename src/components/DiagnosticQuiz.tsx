@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { QuizQuestion, StudentAnswer, EvaluatedQuestionResult } from '@/types';
+import { evaluateStudentQuizAnswers } from '@/lib/gapAnalyzer';
 import {
   BrainCircuit,
   Clock,
@@ -100,7 +101,7 @@ export const DiagnosticQuiz: React.FC<DiagnosticQuizProps> = ({
       });
 
       const data = await res.json();
-      if (data.evaluatedResults) {
+      if (data?.evaluatedResults) {
         setEvaluatedResults(data.evaluatedResults);
         setIsSubmitted(true);
         onCompleteQuiz(data.evaluatedResults, studentAnswers);
@@ -115,11 +116,27 @@ export const DiagnosticQuiz: React.FC<DiagnosticQuizProps> = ({
             origin: { y: 0.6 },
           });
         }
+        return;
       }
     } catch (err) {
-      console.error('Failed to submit quiz:', err);
+      console.warn('API evaluate-quiz call failed or offline; using local deterministic grading fallback:', err);
     } finally {
       setIsSubmitting(false);
+    }
+
+    // Deterministic client fallback if API failed or offline
+    const fallbackResults = evaluateStudentQuizAnswers(questions, studentAnswers);
+    setEvaluatedResults(fallbackResults);
+    setIsSubmitted(true);
+    onCompleteQuiz(fallbackResults, studentAnswers);
+    const correctCount = fallbackResults.filter((r: EvaluatedQuestionResult) => r.isCorrect).length;
+    const scorePercent = Math.round((correctCount / questions.length) * 100);
+    if (scorePercent >= 60) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
     }
   };
 

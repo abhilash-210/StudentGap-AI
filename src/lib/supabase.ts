@@ -13,7 +13,10 @@ export const SUPABASE_KEYS = {
  */
 export function getSupabaseCredentials(): { url: string; anonKey: string } {
   let url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  let anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  let anonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    '';
 
   if (typeof window !== 'undefined') {
     const localUrl = localStorage.getItem(SUPABASE_KEYS.URL);

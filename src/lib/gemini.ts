@@ -193,10 +193,10 @@ export function generateAdaptiveRevisionPlanLocal({
           ? `Deconstruct Misconceptions: ${topic.topicTitle}`
           : `Fast Review: ${topic.topicTitle}`,
         instruction: isWeak
-          ? `Review citation: ${topic.keySourcesToReview[0]?.documentName || 'Course Notes'} (${topic.keySourcesToReview[0]?.section || 'Core Section'}). Focus on: ${topic.primaryReason}`
+          ? `Review citation: ${Array.isArray(topic.keySourcesToReview) && topic.keySourcesToReview[0]?.documentName ? topic.keySourcesToReview[0].documentName : 'Course Notes'} (${Array.isArray(topic.keySourcesToReview) && topic.keySourcesToReview[0]?.section ? topic.keySourcesToReview[0].section : 'Core Section'}). Focus on: ${topic.primaryReason || 'Mastery Gaps'}`
           : `Quickly review key summary sheets and formulas for ${topic.topicTitle}.`,
         durationMinutes: isWeak ? 45 : 30,
-        citationReference: `${topic.keySourcesToReview[0]?.documentName || 'Notes'} - ${topic.keySourcesToReview[0]?.section || 'Core Section'}`,
+        citationReference: `${Array.isArray(topic.keySourcesToReview) && topic.keySourcesToReview[0]?.documentName ? topic.keySourcesToReview[0].documentName : 'Notes'} - ${Array.isArray(topic.keySourcesToReview) && topic.keySourcesToReview[0]?.section ? topic.keySourcesToReview[0].section : 'Core Section'}`,
         completed: false,
       });
       allocatedMins += isWeak ? 45 : 30;
