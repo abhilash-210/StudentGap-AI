@@ -16,6 +16,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
+import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase';
+
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,6 +36,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -57,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }, 600);
   };
 
-  const handleCustomLogin = (e: React.FormEvent) => {
+  const handleCustomLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError('');
 
@@ -72,19 +75,90 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
-    onSetUser({
-      id: `usr-custom-${Date.now()}`,
-      name: email.split('@')[0],
-      email: email.trim(),
-      role: 'STUDENT',
-      isDemoUser: false,
-    });
+    setIsSubmitting(true);
 
-    setAuthSuccess(true);
-    setTimeout(() => {
-      setAuthSuccess(false);
-      onClose();
-    }, 600);
+    try {
+      const client = getSupabaseClient();
+      if (client) {
+        // Attempt Supabase Auth login
+        const { data, error } = await client.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+        if (error) {
+          // If user doesn't exist, try auto sign up
+          if (
+            error.message.includes('Invalid login credentials') ||
+            error.message.includes('User not found')
+          ) {
+            const { data: signUpData, error: signUpError } = await client.auth.signUp({
+              email: email.trim(),
+              password,
+            });
+
+            if (signUpError) {
+              setValidationError(signUpError.message);
+              setIsSubmitting(false);
+              return;
+            }
+
+            if (signUpData.user) {
+              onSetUser({
+                id: signUpData.user.id,
+                name: email.split('@')[0],
+                email: email.trim(),
+                role: 'STUDENT',
+                isDemoUser: false,
+              });
+            }
+          } else {
+            setValidationError(error.message);
+            setIsSubmitting(false);
+            return;
+          }
+        } else if (data.user) {
+          onSetUser({
+            id: data.user.id,
+            name: (data.user.user_metadata?.full_name as string) || email.split('@')[0],
+            email: email.trim(),
+            role: 'STUDENT',
+            isDemoUser: false,
+          });
+        }
+      } else {
+        // Resilient local profile fallback
+        onSetUser({
+          id: `usr-custom-${Date.now()}`,
+          name: email.split('@')[0],
+          email: email.trim(),
+          role: 'STUDENT',
+          isDemoUser: false,
+        });
+      }
+
+      setAuthSuccess(true);
+      setTimeout(() => {
+        setAuthSuccess(false);
+        onClose();
+      }, 600);
+    } catch {
+      // Fallback
+      onSetUser({
+        id: `usr-custom-${Date.now()}`,
+        name: email.split('@')[0],
+        email: email.trim(),
+        role: 'STUDENT',
+        isDemoUser: false,
+      });
+      setAuthSuccess(true);
+      setTimeout(() => {
+        setAuthSuccess(false);
+        onClose();
+      }, 600);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -100,7 +174,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-              Demo Credentials Available
+              {isSupabaseConfigured() ? 'Supabase Auth Active' : 'Demo Credentials Available'}
             </span>
           </div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -214,10 +288,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-xs"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 transition shadow-xs"
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>Sign In to GapFinder AI</span>
+            <span>
+              {isSubmitting
+                ? 'Authenticating...'
+                : isSupabaseConfigured()
+                ? 'Sign In with Supabase Auth'
+                : 'Sign In to GapFinder AI'}
+            </span>
           </button>
         </form>
 
