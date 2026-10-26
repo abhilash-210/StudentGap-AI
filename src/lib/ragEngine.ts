@@ -1,4 +1,4 @@
-import { MaterialChunk, DocumentSource, QuizQuestion } from '@/types';
+import { MaterialChunk } from '@/types';
 
 /**
  * Tokenizes text into lowercase word tokens, stripping punctuation.

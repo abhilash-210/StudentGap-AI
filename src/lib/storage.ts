@@ -1,8 +1,5 @@
 import {
-  CourseMaterial,
   QuizAttemptRecord,
-  DiagnosticGapReport,
-  RevisionPlan,
   UserProfile,
 } from '@/types';
 import { SAMPLE_COURSES, GROUNDED_QUIZ_QUESTIONS } from '@/data/sampleCourses';
@@ -17,6 +14,7 @@ const STORAGE_KEYS = {
   REVISION_PLAN: 'gapfinder_revision_plan',
   USER_PROFILE: 'gapfinder_user_profile',
   GEMINI_API_KEY: 'gapfinder_gemini_api_key',
+  THEME: 'gapfinder_theme',
 };
 
 export const DEMO_USER: UserProfile = {
@@ -115,7 +113,7 @@ export function loadStoredData() {
   }
 }
 
-export function saveStoredData(key: keyof typeof STORAGE_KEYS, value: any) {
+export function saveStoredData(key: keyof typeof STORAGE_KEYS, value: unknown) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(value));

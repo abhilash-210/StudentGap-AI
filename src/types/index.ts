@@ -37,6 +37,7 @@ export interface TopicItem {
   questionsAttempted: number;
   questionsCorrect: number;
   detectedMisconceptions: string[];
+  evidenceSufficiency?: 'HIGH_EVIDENCE' | 'LIMITED_EVIDENCE' | 'UNTESTED';
 }
 
 export interface UnitItem {
@@ -120,6 +121,9 @@ export interface TopicGapDetail {
   primaryReason: string;
   identifiedMisconceptions: string[];
   recommendedAction: string;
+  sampleSize: number;
+  confidenceLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+  evidenceSufficiency: 'HIGH_EVIDENCE' | 'LIMITED_EVIDENCE' | 'UNTESTED';
   keySourcesToReview: {
     documentName: string;
     section: string;
@@ -132,7 +136,9 @@ export interface DiagnosticGapReport {
   createdAt: string;
   quizAttemptId: string;
   overallScorePercent: number;
-  overallReadiness: 'CRITICAL_GAPS' | 'NEEDS_TARGETED_REVISION' | 'EXAM_READY';
+  overallReadiness: 'CRITICAL_GAPS' | 'NEEDS_TARGETED_REVISION' | 'EXAM_READY' | 'UNTESTED';
+  hasSufficientEvidence: boolean;
+  totalQuestionsEvaluated: number;
   summaryMessage: string;
   weakTopics: TopicGapDetail[];
   mediumTopics: TopicGapDetail[];
@@ -194,6 +200,7 @@ export interface QuizAttemptRecord {
   scorePercent: number;
   evaluatedResults: EvaluatedQuestionResult[];
   gapReport: DiagnosticGapReport;
+  answers?: StudentAnswer[];
 }
 
 export interface ChatMessage {

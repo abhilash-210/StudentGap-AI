@@ -24,8 +24,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, plan });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating revision plan:', error);
-    return NextResponse.json({ error: error.message || 'Failed to generate revision plan' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Failed to generate revision plan';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

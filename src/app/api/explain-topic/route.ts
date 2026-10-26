@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in explain-topic route:', error);
-    return NextResponse.json({ error: error.message || 'Failed to explain topic' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Failed to explain topic';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

@@ -33,8 +33,9 @@ export async function POST(request: NextRequest) {
       evaluatedResults,
       gapReport,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error evaluating quiz:', error);
-    return NextResponse.json({ error: error.message || 'Failed to evaluate quiz' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Failed to evaluate quiz';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

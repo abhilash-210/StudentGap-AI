@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { MaterialChunk, QuizQuestion, DiagnosticGapReport, RevisionPlan, DailyRevisionSchedule, RevisionTask } from '@/types';
+import { MaterialChunk, DiagnosticGapReport, RevisionPlan, DailyRevisionSchedule, RevisionTask } from '@/types';
 import { RAGRetriever } from './ragEngine';
 
 export interface AIResponseWithCitations {
@@ -147,7 +147,6 @@ export function generateAdaptiveRevisionPlanLocal({
   dailyHours: number;
   courseTitle: string;
 }): RevisionPlan {
-  const totalAvailableMins = timeframeDays * dailyHours * 60;
   const schedules: DailyRevisionSchedule[] = [];
 
   // Group topics: Weakest high-weightage topics come first

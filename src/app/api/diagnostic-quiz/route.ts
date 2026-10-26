@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GROUNDED_QUIZ_QUESTIONS, SAMPLE_COURSES } from '@/data/sampleCourses';
+import { GROUNDED_QUIZ_QUESTIONS } from '@/data/sampleCourses';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

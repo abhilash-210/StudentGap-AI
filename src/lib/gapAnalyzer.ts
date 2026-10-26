@@ -131,7 +131,7 @@ export function generateDiagnosticGapReport({
     const courseTopic = allCourseTopics.find((t) => t.id === topicId);
     const weightage = courseTopic?.examWeightagePercent || 15;
 
-    let accuracy = stat.total > 0 ? (stat.correct / stat.total) * 100 : (courseTopic?.masteryScore || 50);
+    const accuracy = stat.total > 0 ? (stat.correct / stat.total) * 100 : (courseTopic?.masteryScore || 50);
     // If not tested in this session, use prior baseline if available
     const effectiveMasteryScore = Math.round(stat.total > 0 ? accuracy : (courseTopic?.masteryScore || 50));
 
@@ -173,6 +173,12 @@ export function generateDiagnosticGapReport({
       });
     }
 
+    const sampleSize = stat.total;
+    const evidenceSufficiency: 'HIGH_EVIDENCE' | 'LIMITED_EVIDENCE' | 'UNTESTED' =
+      stat.total >= 3 ? 'HIGH_EVIDENCE' : stat.total > 0 ? 'LIMITED_EVIDENCE' : 'UNTESTED';
+    const confidenceLevel: 'HIGH' | 'MEDIUM' | 'LOW' =
+      stat.total >= 3 ? 'HIGH' : stat.total > 0 ? 'MEDIUM' : 'LOW';
+
     const detail: TopicGapDetail = {
       topicId,
       topicTitle: stat.topicTitle,
@@ -183,6 +189,9 @@ export function generateDiagnosticGapReport({
       accuracyRate: Math.round(accuracy),
       totalQuestions: stat.total,
       correctQuestions: stat.correct,
+      sampleSize,
+      evidenceSufficiency,
+      confidenceLevel,
       primaryReason,
       identifiedMisconceptions: stat.misconceptions,
       recommendedAction,
@@ -198,15 +207,19 @@ export function generateDiagnosticGapReport({
   }
 
   // Calculate overall readiness
+  const hasSufficientEvidence = totalQuestionsCount >= 3;
   const overallScorePercent =
     totalQuestionsCount > 0
       ? Math.round((totalCorrectCount / totalQuestionsCount) * 100)
-      : 60;
+      : 0;
 
-  let overallReadiness: 'CRITICAL_GAPS' | 'NEEDS_TARGETED_REVISION' | 'EXAM_READY' = 'NEEDS_TARGETED_REVISION';
+  let overallReadiness: 'CRITICAL_GAPS' | 'NEEDS_TARGETED_REVISION' | 'EXAM_READY' | 'UNTESTED' = 'UNTESTED';
   let summaryMessage = '';
 
-  if (overallScorePercent < 55 || weakTopics.length >= 2) {
+  if (totalQuestionsCount === 0) {
+    overallReadiness = 'UNTESTED';
+    summaryMessage = 'No diagnostic quiz completed yet. Complete your first diagnostic assessment to evaluate actual knowledge gaps.';
+  } else if (overallScorePercent < 55 || weakTopics.length >= 2) {
     overallReadiness = 'CRITICAL_GAPS';
     summaryMessage = `Diagnostic identified ${weakTopics.length} critical gap(s) directly impacting ${weakTopics.reduce((acc, t) => acc + t.examWeightagePercent, 0)}% of your target exam weightage. Targeted revision is urgently recommended.`;
   } else if (overallScorePercent < 80) {
@@ -249,15 +262,17 @@ export function generateDiagnosticGapReport({
     quizAttemptId: `attempt-${Date.now()}`,
     overallScorePercent,
     overallReadiness,
+    hasSufficientEvidence,
+    totalQuestionsEvaluated: totalQuestionsCount,
     summaryMessage,
     weakTopics,
     mediumTopics,
     strongTopics,
     knowledgeDimensions: {
-      theoretical: avgDimension(allRecall, 75),
-      problemSolving: avgDimension(allProblemSolving, 45),
-      edgeCases: avgDimension(allEdgeCase, 40),
-      terminology: avgDimension(allConceptual, 80),
+      theoretical: avgDimension(allRecall, totalQuestionsCount > 0 ? 0 : 0),
+      problemSolving: avgDimension(allProblemSolving, totalQuestionsCount > 0 ? 0 : 0),
+      edgeCases: avgDimension(allEdgeCase, totalQuestionsCount > 0 ? 0 : 0),
+      terminology: avgDimension(allConceptual, totalQuestionsCount > 0 ? 0 : 0),
     },
     highRiskDangerZones,
   };

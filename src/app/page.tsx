@@ -8,13 +8,13 @@ import {
   RevisionPlan,
   UserProfile,
   MaterialChunk,
-  QuizQuestion,
   EvaluatedQuestionResult,
   StudentAnswer,
 } from '@/types';
 import { loadStoredData, saveStoredData } from '@/lib/storage';
 import { GROUNDED_QUIZ_QUESTIONS } from '@/data/sampleCourses';
-import { Navbar } from '@/components/Navbar';
+import { Navbar, NavTab } from '@/components/Navbar';
+import { StudentDashboard } from '@/components/StudentDashboard';
 import { TopicMap } from '@/components/TopicMap';
 import { DiagnosticQuiz } from '@/components/DiagnosticQuiz';
 import { GapReportView } from '@/components/GapReportView';
@@ -27,23 +27,63 @@ import { AuthModal } from '@/components/AuthModal';
 import { generateAdaptiveRevisionPlanLocal } from '@/lib/gemini';
 import { generateDiagnosticGapReport } from '@/lib/gapAnalyzer';
 
-export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    'gap-report' | 'topic-map' | 'diagnostic-quiz' | 'revision-plan' | 'explain-assistant' | 'progress'
-  >('gap-report');
+const emptySubscribe = () => () => {};
 
-  const [courses, setCourses] = useState<CourseMaterial[]>([]);
-  const [activeCourseId, setActiveCourseId] = useState<string>('cs201-os');
-  const [attempts, setAttempts] = useState<QuizAttemptRecord[]>([]);
-  const [latestReport, setLatestReport] = useState<DiagnosticGapReport | null>(null);
-  const [revisionPlan, setRevisionPlan] = useState<RevisionPlan | null>(null);
-  const [user, setUser] = useState<UserProfile>({
-    id: 'usr-demo-1',
-    name: 'Alex Chen',
-    email: 'student@gapfinder.ai',
-    role: 'STUDENT',
-    isDemoUser: true,
+export default function HomePage() {
+  const isMounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('gapfinder_theme') as 'light' | 'dark') || 'light';
+    }
+    return 'light';
+  });
+
+  const [courses, setCourses] = useState<CourseMaterial[]>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().courses;
+    }
+    return [];
+  });
+  const [activeCourseId, setActiveCourseId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().activeCourseId;
+    }
+    return 'cs201-os';
+  });
+  const [attempts, setAttempts] = useState<QuizAttemptRecord[]>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().attempts;
+    }
+    return [];
+  });
+  const [latestReport, setLatestReport] = useState<DiagnosticGapReport | null>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().latestReport;
+    }
+    return null;
+  });
+  const [revisionPlan, setRevisionPlan] = useState<RevisionPlan | null>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().revisionPlan;
+    }
+    return null;
+  });
+  const [user, setUser] = useState<UserProfile>(() => {
+    if (typeof window !== 'undefined') {
+      return loadStoredData().userProfile;
+    }
+    return {
+      id: 'usr-demo-1',
+      name: 'Alex Chen',
+      email: 'student@gapfinder.ai',
+      role: 'STUDENT',
+      isDemoUser: true,
+    };
   });
 
   // Modal states
@@ -55,17 +95,26 @@ export default function HomePage() {
   const [filterTopicForQuiz, setFilterTopicForQuiz] = useState<string | undefined>(undefined);
   const [initialTopicPrompt, setInitialTopicPrompt] = useState<string | undefined>(undefined);
 
-  // Hydration & Initial data load
+  // Hydration & DOM synchronization
   useEffect(() => {
-    const data = loadStoredData();
-    setCourses(data.courses);
-    setActiveCourseId(data.activeCourseId);
-    setAttempts(data.attempts);
-    setLatestReport(data.latestReport);
-    setRevisionPlan(data.revisionPlan);
-    setUser(data.userProfile);
-    setMounted(true);
+    const storedTheme = (localStorage.getItem('gapfinder_theme') as 'light' | 'dark') || 'light';
+    if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('gapfinder_theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const activeCourse = courses.find((c) => c.id === activeCourseId) || courses[0];
 
@@ -107,6 +156,7 @@ export default function HomePage() {
       scorePercent: newReport.overallScorePercent,
       evaluatedResults,
       gapReport: newReport,
+      answers,
     };
 
     const updatedAttempts = [newAttempt, ...attempts];
@@ -178,12 +228,12 @@ export default function HomePage() {
     saveStoredData('COURSES', updatedCourses);
   };
 
-  if (!mounted || !activeCourse || !latestReport || !revisionPlan) {
+  if (!isMounted || !activeCourse || !latestReport || !revisionPlan) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-500">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
-          <p className="text-sm font-medium">Initializing GapFinder AI Knowledge Base...</p>
+          <div className="w-10 h-10 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin" />
+          <p className="text-sm font-semibold">Initializing GapFinder AI Platform...</p>
         </div>
       </div>
     );
@@ -197,7 +247,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
       {/* Navigation Header */}
       <Navbar
         activeTab={activeTab}
@@ -210,10 +260,25 @@ export default function HomePage() {
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
-      {/* Main Container */}
+      {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'dashboard' && (
+          <StudentDashboard
+            course={activeCourse}
+            report={latestReport}
+            plan={revisionPlan}
+            attempts={attempts}
+            user={user}
+            onNavigateTab={setActiveTab}
+            onSelectTopicForQuiz={handleSelectTopicForQuiz}
+            onSelectTopicForExplain={handleSelectTopicForExplain}
+          />
+        )}
+
         {activeTab === 'gap-report' && (
           <GapReportView
             report={latestReport}
@@ -281,17 +346,16 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-6 mt-12 text-xs text-slate-500">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-6 mt-12 text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-300">GapFinder AI</span>
-            <span>• Built for Placement Drive Submission</span>
-            <span>• Next.js App Router & TypeScript</span>
+            <span className="font-bold text-slate-800 dark:text-slate-200">GapFinder AI</span>
+            <span>• Placement Drive Technical Evaluation Deliverable</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4">
             <span>Retrieval-Augmented Generation (RAG)</span>
             <span>•</span>
-            <span>Grounded Citations</span>
+            <span>Misconception Diagnosis</span>
             <span>•</span>
             <span>Adaptive Revision</span>
           </div>
