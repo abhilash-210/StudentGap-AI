@@ -26,6 +26,13 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { AuthModal } from '@/components/AuthModal';
 import { generateAdaptiveRevisionPlanLocal } from '@/lib/gemini';
 import { generateDiagnosticGapReport } from '@/lib/gapAnalyzer';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import {
+  saveQuizAttemptToSupabase,
+  saveGapReportToSupabase,
+  saveRevisionPlanToSupabase,
+  syncCourseToSupabase,
+} from '@/lib/supabaseDb';
 
 const emptySubscribe = () => () => {};
 
@@ -176,6 +183,13 @@ export default function HomePage() {
     saveStoredData('QUIZ_ATTEMPTS', updatedAttempts);
     saveStoredData('LATEST_GAP_REPORT', newReport);
     saveStoredData('REVISION_PLAN', updatedPlan);
+
+    // Sync to Supabase PostgreSQL when configured
+    if (isSupabaseConfigured()) {
+      saveQuizAttemptToSupabase(newAttempt, activeCourse.id);
+      saveGapReportToSupabase(newReport, activeCourse.id);
+      saveRevisionPlanToSupabase(updatedPlan, activeCourse.id);
+    }
   };
 
   // Plan regeneration handler
@@ -191,12 +205,18 @@ export default function HomePage() {
 
     setRevisionPlan(newPlan);
     saveStoredData('REVISION_PLAN', newPlan);
+    if (isSupabaseConfigured()) {
+      saveRevisionPlanToSupabase(newPlan, activeCourse.id);
+    }
   };
 
   // Plan update handler (e.g., when tasks are checked)
   const handleUpdatePlan = (updatedPlan: RevisionPlan) => {
     setRevisionPlan(updatedPlan);
     saveStoredData('REVISION_PLAN', updatedPlan);
+    if (isSupabaseConfigured() && activeCourse) {
+      saveRevisionPlanToSupabase(updatedPlan, activeCourse.id);
+    }
   };
 
   // Material upload ingestion handler
@@ -226,6 +246,9 @@ export default function HomePage() {
     const updatedCourses = courses.map((c) => (c.id === updatedCourse.id ? updatedCourse : c));
     setCourses(updatedCourses);
     saveStoredData('COURSES', updatedCourses);
+    if (isSupabaseConfigured()) {
+      syncCourseToSupabase(updatedCourse);
+    }
   };
 
   if (!isMounted || !activeCourse || !latestReport || !revisionPlan) {
